@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter.filedialog import askopenfilename
 import tkinter as tk
+from tkinter import ttk
+import LoadData as LD
 
 class Main(tk.Tk):
     def __init__(self):
@@ -13,8 +15,8 @@ class Main(tk.Tk):
         # ----- Menubar ----- #
         menubar = Menu(self)
         filemenu = Menu(menubar, tearoff=0)
-        filemenu.add_command(label="Blank")
-        menubar.add_cascade(label="File", menu=filemenu)
+        filemenu.add_command(label="Main Menu", command=lambda: self.show_frame("pageIDStart"))
+        menubar.add_cascade(label="Shortcut", menu=filemenu)
         self.config(menu=menubar)
 
         container = tk.Frame(self)
@@ -57,6 +59,7 @@ class Main(tk.Tk):
 
     # V----- Open Dialog to open the xlsx file ----- #
     def windowsDialog(self):
+        """ Function to call windows dialog """ 
         loc = askopenfilename(title='Please choose an .xlsx file')
         self.filepath = loc
         self.listBox.insert("end",self.filepath)
@@ -64,6 +67,7 @@ class Main(tk.Tk):
 
     # V----- Detect mouse event for tooltip
     def CreateToolTip(self, text):
+        """ Function for tooltip """
         toolTip = ToolTip(self)
         def enter(event):
             toolTip.showtip(text)
@@ -91,13 +95,13 @@ class ReadPage(tk.Frame):
     def __init__(self,parent,frameName):
         tk.Frame.__init__(self,parent)
         self.mainframe = Frame(self)
-        self.mainframe.grid(column=0,row=0)
+        # self.mainframe.configure(bg='red')
+        self.mainframe.place(height=500, width=1000)
+        self.filepath = ""
 
         # SubFrame for interactables
         self.frame1 = Frame(self.mainframe)
-        self.frame1.grid(column="0",row="0", ipadx=10, ipady=10)
-        self.filepath = ""
-        self.configure(bg="gray")
+        self.frame1.grid(column="0",row="0", ipadx=10, ipady=10,sticky=N)
         self.button = tk.Button(self.frame1,text="Return",command=lambda: frameName.show_frame("pageIDStart"), width=7)
         self.button.pack(anchor="w", pady=(10,30),padx=(65,10))
         self.button1 = tk.Button(self.frame1,text="Open file",command=lambda: Main.windowsDialog(self))
@@ -105,24 +109,29 @@ class ReadPage(tk.Frame):
         self.listBox = Listbox(self.frame1,width=30,height=1)
         self.listBox.pack(anchor="w",padx=(10,10))
 
-        self.variable = StringVar(self)    #Dropdown menu for filter 
+        self.variable = StringVar(self)    #Dropdown menu for display option 
         self.option = ['Driver Log','Driver Productivity','Production Graph']
-        self.variable.set('Select Filter')
+        self.variable.set('Display Option')
 
         popupMenu = OptionMenu(self.frame1, self.variable, *self.option)
         popupMenu.pack(anchor = "w", padx=(45,10), pady=(10,10))
         
         def change_dropdown(*args):
-            print(self.variable.get())
+            LD.Load_excel_data(self)
 
         self.variable.trace('w', change_dropdown)
 
         # SubFrame for displaying data
         self.frame2 = Frame(self.mainframe)
-        self.frame2.grid(column="1",row="0",ipady=(30))
-        self.listBox1 = Listbox(self.frame2,width=120)
-        self.listBox1.pack(padx=(0,50),pady=(10,0))
-
+        self.frame2.place(relx=0.2, rely=0,width=800, height=500)
+        self.display = ttk.Treeview(self.frame2)
+        self.display.place(relheight=0.9, relwidth=0.9)
+        self.scrollx1 = Scrollbar(self.frame2, orient='horizontal', command=self.display.xview)
+        self.scrolly2 = Scrollbar(self.frame2, orient='vertical', command=self.display.yview)
+        self.display.configure(xscrollcommand=self.scrollx1.set, yscrollcommand=self.scrolly2.set)
+        self.scrollx1.pack(side="bottom", fill="x") 
+        self.scrolly2.pack(side="right", fill="y")
+        
 class AddPage(tk.Frame):
     def __init__(self,parent,frameName):
         tk.Frame.__init__(self,parent)
@@ -177,8 +186,6 @@ class ToolTip(object):
         if tw:
             tw.destroy()
 
-def placeholder():
-    pass
-        
-root = Main()
-root.mainloop()
+if __name__ == "__main__":    
+    root = Main()
+    root.mainloop()

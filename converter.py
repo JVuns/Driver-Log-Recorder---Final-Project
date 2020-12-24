@@ -13,7 +13,7 @@ class Karyawan():
         self.spec = spec
         self.namaOperator = namaOperator
         
-wb = openpyxl.load_workbook(filename="C:/Users/jevon/Documents/GitHub/Coal Proj/Data2", data_only = True)
+wb = openpyxl.load_workbook(filename="Data1.xlsx", data_only = True)
 sheet = wb.active
 sheet.title = "Sheet2"
 for row in sheet.iter_rows(min_row=1,max_row=datamax,min_col=1,max_col=23,values_only=True):
