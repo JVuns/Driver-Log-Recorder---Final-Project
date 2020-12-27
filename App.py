@@ -62,8 +62,9 @@ class Main(tk.Tk):
         """ Function to call windows dialog """ 
         loc = askopenfilename(title='Please choose an .xlsx file')
         self.filepath = loc
+        self.listBox.delete(0)
         self.listBox.insert("end",self.filepath)
-        Main.CreateToolTip(self.button1, text=f"Path: {self.filepath}")
+        Main.CreateToolTip(self.buttonpath, text=f"Path: {self.filepath}")
 
     # V----- Detect mouse event for tooltip
     def CreateToolTip(self, text):
@@ -88,7 +89,7 @@ class StartPage(tk.Frame):
         self.button1.pack(anchor="w", padx=(10,10), pady=(10,10))
         self.button2 = tk.Button(self, height=2, width=15, text ="Add data",command=lambda: frameName.show_frame("pageIDAdd"))
         self.button2.pack(anchor="w", padx=(10,10), pady=(10,10))
-        self.button3 = tk.Button(self, height=2, width=15, text="Delete data",command=lambda: frameName.show_frame("pageIDDel"))
+        self.button3 = tk.Button(self, height=2, width=15, text="Add variable",command=lambda: frameName.show_frame("pageIDDel"))
         self.button3.pack(anchor="w", padx=(10,10), pady=(10,10))
         
 class ReadPage(tk.Frame):
@@ -104,8 +105,8 @@ class ReadPage(tk.Frame):
         self.frame1.grid(column="0",row="0", ipadx=10, ipady=10,sticky=N)
         self.button = tk.Button(self.frame1,text="Return",command=lambda: frameName.show_frame("pageIDStart"), width=7)
         self.button.pack(anchor="w", pady=(10,30),padx=(65,10))
-        self.button1 = tk.Button(self.frame1,text="Open file",command=lambda: Main.windowsDialog(self))
-        self.button1.pack(anchor="w",padx=(65,10),pady=(0,10))
+        self.buttonpath = tk.Button(self.frame1,text="Open file",command=lambda: Main.windowsDialog(self))
+        self.buttonpath.pack(anchor="w",padx=(65,10),pady=(0,10))
         self.listBox = Listbox(self.frame1,width=30,height=1)
         self.listBox.pack(anchor="w",padx=(10,10))
 
@@ -135,12 +136,40 @@ class ReadPage(tk.Frame):
 class AddPage(tk.Frame):
     def __init__(self,parent,frameName):
         tk.Frame.__init__(self,parent)
+        self.mainframe = Frame(self)
+        self.mainframe.place(height=500,width=1000)
+        self.mainframe.configure(bg="red")
+        self.frame1 = Frame(self.mainframe)
+        self.frame1.place(relx=0,rely=0,height=250,width=500)
         self.filepath = ""
         self.configure(bg="gray")
-        self.button = tk.Button(self,text="Go back",command=lambda: frameName.show_frame("pageIDStart"))
-        self.button.pack()      
-        self.button1 = tk.Button(self,text="Open file",command=lambda: Main.windowsDialog(self))
-        self.button1.pack()
+        self.label1 = Label(self.frame1, text="Name")
+        self.label1.grid(column=0,row=0,padx=(10,10),pady=(10,10))   
+        self.entry1 = Entry(self.frame1, width=30)
+        self.entry1.grid(column=1, row=0,padx=(10,10),pady=(10,10))
+        self.label2 = Label(self.frame1, text="Route")
+        self.label2.grid(column=0, row=1,padx=(10,10),pady=(10,10))
+        self.entry2 = Entry(self.frame1, width=30)
+        self.entry2.grid(column=1,row=1,padx=(10,10),pady=(10,10))
+        self.label3 = Label(self.frame1,text="Vehicle Type")
+        self.label3.grid(column=0,row=2,padx=(10,10),pady=(10,10))
+        self.entry3 = Entry(self.frame1, width=30)
+        self.entry3.grid(column=1,row=2,padx=(10,10),pady=(10,10))
+        self.buttonpath = tk.Button(self.frame1,text="Open file",command=lambda: Main.windowsDialog(self))
+        self.buttonpath.grid(column=0,row=3,padx=(10,0),pady=(20,10))
+        self.listBox = Listbox(self.frame1,width=50,height=1)
+        self.listBox.grid(column=1,row=3,padx=(0,0),pady=(20,10))
+        self.button = Button(self.frame1,text="Add", command=lambda: LD.post(self,
+        self.entry1.get(),
+        self.entry2.get(),
+        self.entry3.get()
+        ))
+        self.button.grid(column=3,row=4, padx=(10,10), pady=(10,10))
+
+        self.frame2 = Frame(self.mainframe)
+        self.frame2.place(relx=0.5,rely=0,height=250,width=500)
+        self.display = ttk.Treeview(self.frame2)
+        self.display.place(relheight=0.9, relwidth=0.9)
 
 class DelPage(tk.Frame):
     def __init__(self,parent,frameName):
@@ -176,7 +205,7 @@ class ToolTip(object):
         tw.wm_overrideredirect(1)
         tw.wm_geometry("+%d+%d" % (x, y))
         label = Label(tw, text=self.text, justify=LEFT,
-                      background="#ffffe0", relief=SOLID, borderwidth=1,
+                      background="white", relief=SOLID, borderwidth=1,
                       font=("calibri", "10", "normal"))
         label.pack(ipadx=1)
 
