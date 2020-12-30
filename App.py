@@ -1,11 +1,13 @@
 from tkinter import *
-from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import askopenfilename,asksaveasfilename
 import tkinter as tk
 from tkinter import ttk
 import LoadData as LD
+from misc import *
 
 class Main(tk.Tk):
     def __init__(self):
+        startupLoad(self)
         tk.Tk.__init__(self)
 
         # ----- Screen res and title ----- #
@@ -31,8 +33,6 @@ class Main(tk.Tk):
         frame_read = ReadPage(container,self)
         frame_add = AddPage(container,self)
         frame_del = DelPage(container,self)
-        frame_delEmployee = Delsub(container,self,"Employee")
-        frame_delVechile = Delsub(container,self,"vehicle")
 
         # V ----- Add frames to dictionary ----- # 
 
@@ -40,15 +40,11 @@ class Main(tk.Tk):
         self.frames["pageIDRead"] = frame_read
         self.frames["pageIDAdd"] = frame_add
         self.frames["pageIDDel"] = frame_del
-        self.frames["pageIDEmployeeDel"] = frame_delEmployee
-        self.frames["pageIDVehicleDel"] = frame_delVechile
 
         frame_menu.grid(row=0,column=0,sticky="nsew")
         frame_read.grid(row=0,column=0,sticky="nsew")
         frame_add.grid(row=0,column=0,sticky="nsew")
         frame_del.grid(row=0,column=0,sticky="nsew")
-        frame_delEmployee.grid(row=0,column=0,sticky="nsew")
-        frame_delVechile.grid(row=0,column=0,sticky="nsew")
 
         self.show_frame("pageIDStart") # The first 6
 
@@ -64,7 +60,7 @@ class Main(tk.Tk):
         self.filepath = loc
         self.listBox.delete(0)
         self.listBox.insert("end",self.filepath)
-        Main.CreateToolTip(self.buttonpath, text=f"Path: {self.filepath}")
+        Main.CreateToolTip(self.buttonpath, text=f"Path: {self.filepath}") 
 
     # V----- Detect mouse event for tooltip
     def CreateToolTip(self, text):
@@ -100,7 +96,7 @@ class ReadPage(tk.Frame):
         self.mainframe.place(height=500, width=1000)
         self.filepath = ""
 
-        # SubFrame for interactables
+        # 1st Frame, interactables
         self.frame1 = Frame(self.mainframe)
         self.frame1.grid(column="0",row="0", ipadx=10, ipady=10,sticky=N)
         self.button = tk.Button(self.frame1,text="Return",command=lambda: frameName.show_frame("pageIDStart"), width=7)
@@ -122,7 +118,7 @@ class ReadPage(tk.Frame):
 
         self.variable.trace('w', change_dropdown)
 
-        # SubFrame for displaying data
+        # 2nd Frame, data display
         self.frame2 = Frame(self.mainframe)
         self.frame2.place(relx=0.2, rely=0,width=800, height=500)
         self.display = ttk.Treeview(self.frame2)
@@ -138,7 +134,9 @@ class AddPage(tk.Frame):
         tk.Frame.__init__(self,parent)
         self.mainframe = Frame(self)
         self.mainframe.place(height=500,width=1000)
-        self.mainframe.configure(bg="red")
+        # self.mainframe.configure(bg="red")
+
+        #1st Frame, data entry
         self.frame1 = Frame(self.mainframe)
         self.frame1.place(relx=0,rely=0,height=250,width=500)
         self.filepath = ""
@@ -157,35 +155,128 @@ class AddPage(tk.Frame):
         self.entry3.grid(column=1,row=2,padx=(10,10),pady=(10,10))
         self.buttonpath = tk.Button(self.frame1,text="Open file",command=lambda: Main.windowsDialog(self))
         self.buttonpath.grid(column=0,row=3,padx=(10,0),pady=(20,10))
-        self.listBox = Listbox(self.frame1,width=50,height=1)
+        self.listBox = Listbox(self.frame1,width=40,height=1)
         self.listBox.grid(column=1,row=3,padx=(0,0),pady=(20,10))
-        self.button = Button(self.frame1,text="Add", command=lambda: LD.post(self,
+
+        self.buttonadd = Button(self.frame1,text="Add", width=4, command=lambda: LD.post(self,
         self.entry1.get(),
         self.entry2.get(),
         self.entry3.get()
-        ))
-        self.button.grid(column=3,row=4, padx=(10,10), pady=(10,10))
+        )) #Passing all the entry into post function in LoadData File
+        self.buttonadd.grid(column=3,row=2, padx=(10,10), pady=(10,10))
 
+        self.buttonload = Button(self.frame1,text="Load", width=8, command=self.Load)
+        self.buttonload.grid(column=1,row=4 ,padx=(0,80) ,pady=(10,10))
+        self.buttonremove = Button(self.frame1,text="Remove", width=8, command=self.Delete)
+        self.buttonremove.grid(column=1,row=4 ,padx=(80,0) ,pady=(10,10))
+        
+    #2nd Frame, Draft table
         self.frame2 = Frame(self.mainframe)
         self.frame2.place(relx=0.5,rely=0,height=250,width=500)
-        self.display = ttk.Treeview(self.frame2)
-        self.display.place(relheight=0.9, relwidth=0.9)
+        self.displayDraft = ttk.Treeview(self.frame2, column=("Name","Vehicle","Route","Date"))
+        self.displayDraft.place(relheight=0.9, relwidth=0.8)
+        self.displayDraft.bind('<Delete>', self.delete) #Bind Delete key to delete function
+        self.button = Button(self.frame2,text="Post", command=self.transfer)
+        self.button.place(relx=0.8,rely=0.8)
+
+    #3rd Frame, Actual table
+        self.frame3 = Frame(self.mainframe)
+        self.frame3.place(relx=0.05, rely=0.5, height=250, width=1000)
+        self.display = ttk.Treeview(self.frame3, column=("Name","Vehicle","Route","Date"))
+        self.display.place(relheight=0.9, relwidth=0.85)
+        self.savebutton = Button(self.frame3, text="Save", command=self.Save)
+        self.savebutton.place(rely=0.8,relx=0.85)
+
+    def delete(self, event=None): #suppose to be in the LoadData.py
+        self.Selected = self.displayDraft.focus() #This will store focused item into the attribute 
+        self.displayDraft.delete(self.Selected) #This will delete the focused item
+    #Should've use lambda but didn't
+    def Load(self):
+        LD.misc_load(self)
+    def Delete(self):
+        LD.clear_data(self)
+        self.listBox.delete(0)
+    def Save(self):
+        saveDialog(self)
+    def transfer(self):
+        LD.transferdata(self)
 
 class DelPage(tk.Frame):
     def __init__(self,parent,frameName):
         tk.Frame.__init__(self,parent)
-        self.button = tk.Button(self,text="Delete employee data",command=lambda: frameName.show_frame("pageIDEmployeeDel"))
-        self.button.pack()
-        self.button2 = tk.Button(self,text="Delete vehicle data",command=lambda: frameName.show_frame("pageIDVehicleDel"))
-        self.button2.pack()
+        self.mainframe = Frame(self)
+        self.mainframe.place(height=500,width=1000)
+        # self.mainframe.configure(bg="red")
+        self.returnbutton = Button(self.mainframe,text="Return",command=lambda: frameName.show_frame("pageIDStart"), width=7)
+        self.returnbutton.place(relx=0.03,rely=0.015)
+        self.savebutton = Button(self.mainframe,text="Save variable")
+        self.savebutton.place(relx=0.1, rely=0.015)
 
-class Delsub(tk.Frame):
-    def __init__(self,parent,frameName,subtype):
-        tk.Frame.__init__(self,parent)
-        self.label = tk.Label(self,text=f"{subtype} page")
-        self.label.pack()
-        self.button = tk.Button(self,text="Go back",command=lambda: frameName.show_frame("pageIDDel"))
-        self.button.pack()
+        # Frame for streak variable
+        self.frameStreak= Frame(self.mainframe,borderwidth=2, relief="groove")
+        self.frameStreak.place(relx=0.03, rely= 0.085, relwidth=0.45, relheight=0.4)
+        self.label = Label(self.frameStreak,text="Streak modifier")
+        self.label.place(relx=0.05,rely=0)
+        self.label2 = Label(self.frameStreak, text="Category 1-3")
+        self.label2.place(relx=0.1, rely=0.3)
+        self.label3 = Label(self.frameStreak, text="Category 4-5")
+        self.label3.place(relx=0.1, rely=0.5)
+        self.label4 = Label(self.frameStreak, text="Category 6 Up")
+        self.label4.place(relx=0.1, rely=0.7)
+        self.streakA = Entry(self.frameStreak)
+        self.streakA.place(relx=0.5, rely=0.3)
+        self.streakB = Entry(self.frameStreak)
+        self.streakB.place(relx=0.5, rely=0.5)
+        self.streakC = Entry(self.frameStreak)
+        self.streakC.place(relx=0.5, rely=0.7)
+
+        # Frame for base wage 
+        self.frameWage = Frame(self.mainframe,borderwidth=2, relief="groove")
+        self.frameWage.place(relx=0.50, rely=0.085, relwidth=0.45, relheight=0.4)
+        self.label = Label(self.frameWage,text="Base Wage")
+        self.label.place(relx=0.05,rely=0)
+        self.label2 = Label(self.frameWage,text="Base Wage")
+        self.label2.place(rely=0.45,relx=0.1,)
+        self.baseWage = Entry(self.frameWage, width=40)
+        self.baseWage.place(rely=0.45,relx=0.3)
+
+        # Frame for route variable
+        self.frameRoute = Frame(self.mainframe,borderwidth=2, relief="groove")
+        self.frameRoute.place(relx=0.03, rely=0.52, relwidth=0.45, relheight=0.4)
+        self.label = Label(self.frameRoute,text="Route modifier")
+        self.label.place(relx=0.05,rely=0)
+        self.label1 = Label(self.frameRoute, text="Route")
+        self.label1.place(relx=0.1, rely=0.2)
+        self.route = Entry(self.frameRoute)
+        self.route.place(relx=0.3, rely=0.2)
+        self.label2 = Label(self.frameRoute, text="Modifier")
+        self.label2.place(relx=0.1, rely=0.4)
+        self.routeM = Entry(self.frameRoute)
+        self.routeM.place(relx=0.3, rely=0.4)
+        self.buttonPost = Button(self.frameRoute,text="Post")
+        self.buttonPost.place(relx=0.87, rely=0.38)
+
+        self.routeDisp = ttk.Treeview(self.frameRoute, column=("Route","Modifier"))
+        self.routeDisp.place(relx=0.05, rely=0.55, relheight=0.4, relwidth=0.9)
+
+        # Frame for vehicle
+        self.frameVehicle = Frame(self.mainframe,borderwidth=2, relief="groove")
+        self.frameVehicle.place(relx=0.50, rely=0.52, relwidth=0.45, relheight=0.4)
+        self.label = Label(self.frameVehicle,text="Vehicle modifier")
+        self.label.place(relx=0.05,rely=0)
+        self.label1 = Label(self.frameVehicle, text="Vehicle")
+        self.label1.place(relx=0.1, rely=0.2)
+        self.vehicle = Entry(self.frameVehicle)
+        self.vehicle.place(relx=0.3, rely=0.2)
+        self.label2 = Label(self.frameVehicle, text="Modifier")
+        self.label2.place(relx=0.1, rely=0.4)
+        self.vehicleM = Entry(self.frameVehicle)
+        self.vehicleM.place(relx=0.3, rely=0.4)
+        self.buttonPost = Button(self.frameVehicle,text="Post")
+        self.buttonPost.place(relx=0.87, rely=0.38)
+
+        self.vehicleDisp = ttk.Treeview(self.frameVehicle, column=("Vehicle","Modifier"))
+        self.vehicleDisp.place(relx=0.05, rely=0.55, relheight=0.4, relwidth=0.9)
 
 class ToolTip(object):
     def __init__(self, widget):
