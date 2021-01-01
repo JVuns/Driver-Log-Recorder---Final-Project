@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 import LoadData as LD
 from misc import *
+import os
 
 class Main(tk.Tk):
     def __init__(self):
@@ -33,6 +34,7 @@ class Main(tk.Tk):
         frame_read = ReadPage(container,self)
         frame_add = AddPage(container,self)
         frame_del = DelPage(container,self)
+        frame_tar = TarPage(container,self)
 
         # V ----- Add frames to dictionary ----- # 
 
@@ -40,11 +42,13 @@ class Main(tk.Tk):
         self.frames["pageIDRead"] = frame_read
         self.frames["pageIDAdd"] = frame_add
         self.frames["pageIDDel"] = frame_del
+        self.frames["pageIDTar"] = frame_tar
 
         frame_menu.grid(row=0,column=0,sticky="nsew")
         frame_read.grid(row=0,column=0,sticky="nsew")
         frame_add.grid(row=0,column=0,sticky="nsew")
         frame_del.grid(row=0,column=0,sticky="nsew")
+        frame_tar.grid(row=0,column=0,sticky="nsew")
 
         self.show_frame("pageIDStart") # The first 6
 
@@ -87,6 +91,8 @@ class StartPage(tk.Frame):
         self.button2.pack(anchor="w", padx=(10,10), pady=(10,10))
         self.button3 = tk.Button(self, height=2, width=15, text="Add variable",command=lambda: frameName.show_frame("pageIDDel"))
         self.button3.pack(anchor="w", padx=(10,10), pady=(10,10))
+        self.button4 = tk.Button(self, height=2, width=15, text="Production target",command=lambda: frameName.show_frame("pageIDTar"))
+        self.button4.pack(anchor="w", padx=(10,10), pady=(10,10))        
         
 class ReadPage(tk.Frame):
     def __init__(self,parent,frameName):
@@ -106,9 +112,19 @@ class ReadPage(tk.Frame):
         self.listBox = Listbox(self.frame1,width=30,height=1)
         self.listBox.pack(anchor="w",padx=(10,10))
 
-        self.variable = StringVar(self)    #Dropdown menu for display option 
+        #Dropdown menu for display option
+        self.variable = StringVar(self)     
         self.option = ['Driver Log','Driver Productivity','Production Graph']
         self.variable.set('Display Option')
+
+        # Arguments for dropdown menu
+        self.optionDP = Frame(self.mainframe)
+        self.optionDP.place(relx=0.02, rely=0.35, height=30, width=150)
+        self.targetL = tk.Label(self.optionDP, text="Target")
+        self.targetL.place(relx=0.1, rely=0.1)
+        self.targetE = tk. Entry(self.optionDP, width=10)
+        self.targetE.place(relx=0.4, rely=0.1)
+        Main.CreateToolTip(self.targetE, text=f"""Takes number of activity desired per choosen interval\nie: 30/D, 210/W, 900/M\nAvailable arguments: Day(D), (W), (M)""")
 
         popupMenu = OptionMenu(self.frame1, self.variable, *self.option)
         popupMenu.pack(anchor = "w", padx=(45,10), pady=(10,10))
@@ -209,8 +225,12 @@ class DelPage(tk.Frame):
         # self.mainframe.configure(bg="red")
         self.returnbutton = Button(self.mainframe,text="Return",command=lambda: frameName.show_frame("pageIDStart"), width=7)
         self.returnbutton.place(relx=0.03,rely=0.015)
-        self.savebutton = Button(self.mainframe,text="Save variable")
+        self.savebutton = Button(self.mainframe,text="Save variable", command=lambda: SaveVar(self))
         self.savebutton.place(relx=0.1, rely=0.015)
+        self.savenameL = Label(self.mainframe, text="Variable name")
+        self.savenameL.place(relx=0.2, rely=0.02)
+        self.savenameE = Entry(self.mainframe)
+        self.savenameE.place(relx=0.3, rely=0.02)
 
         # Frame for streak variable
         self.frameStreak= Frame(self.mainframe,borderwidth=2, relief="groove")
@@ -253,11 +273,11 @@ class DelPage(tk.Frame):
         self.label2.place(relx=0.1, rely=0.4)
         self.routeM = Entry(self.frameRoute)
         self.routeM.place(relx=0.3, rely=0.4)
-        self.buttonPost = Button(self.frameRoute,text="Post")
+        self.buttonPost = Button(self.frameRoute,text="Post",command=lambda: LD.varPostR(self, self.route.get(), self.routeM.get()))
         self.buttonPost.place(relx=0.87, rely=0.38)
 
-        self.routeDisp = ttk.Treeview(self.frameRoute, column=("Route","Modifier"))
-        self.routeDisp.place(relx=0.05, rely=0.55, relheight=0.4, relwidth=0.9)
+        self.varDispR = ttk.Treeview(self.frameRoute, column=("Route","Modifier"))
+        self.varDispR.place(relx=0.05, rely=0.55, relheight=0.4, relwidth=0.9)
 
         # Frame for vehicle
         self.frameVehicle = Frame(self.mainframe,borderwidth=2, relief="groove")
@@ -272,11 +292,18 @@ class DelPage(tk.Frame):
         self.label2.place(relx=0.1, rely=0.4)
         self.vehicleM = Entry(self.frameVehicle)
         self.vehicleM.place(relx=0.3, rely=0.4)
-        self.buttonPost = Button(self.frameVehicle,text="Post")
+        self.buttonPost = Button(self.frameVehicle,text="Post", command=lambda: LD.varPostV(self, self.vehicle.get(), self.vehicleM.get()))
         self.buttonPost.place(relx=0.87, rely=0.38)
 
-        self.vehicleDisp = ttk.Treeview(self.frameVehicle, column=("Vehicle","Modifier"))
-        self.vehicleDisp.place(relx=0.05, rely=0.55, relheight=0.4, relwidth=0.9)
+        self.varDispV = ttk.Treeview(self.frameVehicle, column=("Vehicle","Modifier"))
+        self.varDispV.place(relx=0.05, rely=0.55, relheight=0.4, relwidth=0.9)
+
+class TarPage(tk.Frame):
+    def __init__(self,parent,frameName):
+        tk.Frame.__init__(self,parent)
+        self.mainframe = Frame(self)
+        self.mainframe.place(relx=0, rely=0, width=1000, height=500)
+
 
 class ToolTip(object):
     def __init__(self, widget):
