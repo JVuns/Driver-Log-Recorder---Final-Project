@@ -124,7 +124,7 @@ class ReadPage(tk.Frame):
         self.targetL.place(relx=0.1, rely=0.1)
         self.targetE = tk. Entry(self.optionDP, width=10)
         self.targetE.place(relx=0.4, rely=0.1)
-        Main.CreateToolTip(self.targetE, text=f"""Takes number of activity desired per choosen interval\nie: 30/D, 210/W, 900/M\nAvailable arguments: Day(D), (W), (M)""")
+        Main.CreateToolTip(self.targetE, text=f"""Takes number of activity desired per choosen interval""")
 
         popupMenu = OptionMenu(self.frame1, self.variable, *self.option)
         popupMenu.pack(anchor = "w", padx=(45,10), pady=(10,10))
