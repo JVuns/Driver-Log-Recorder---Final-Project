@@ -36,14 +36,16 @@ def SaveVar(self):
         vechileList.append([self.varDispV.item(child)["text"],self.varDispV.item(child)["values"]])
     for child in self.varDispR.get_children():
         routeList.append([self.varDispR.item(child)["text"],self.varDispR.item(child)["values"]])
-    df = pd.DataFrame({
-        "Category A": CatA,
-        "Category B": CatB,
-        "Category C": CatC,
-        "Vehicle": vechileList,
-        "Route": routeList,
-        "Base wage": baseWage
+    my_dict = ({
+    "Category A": CatA,
+    "Category B": CatB,
+    "Category C": CatC,
+    "Vehicle": vechileList,
+    "Route": routeList,
+    "Base wage": baseWage
     })
+    df = pd.DataFrame({ key:pd.Series(value) for key, value in my_dict.items() })
+
     print(df)
     path = f"Driver-Log-Recorder---Final-Project/Saved variable/{userfilename}.xlsx"
     df.to_excel(path)

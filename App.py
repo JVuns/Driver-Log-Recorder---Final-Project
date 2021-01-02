@@ -34,7 +34,7 @@ class Main(tk.Tk):
         frame_read = ReadPage(container,self)
         frame_add = AddPage(container,self)
         frame_del = DelPage(container,self)
-        frame_tar = TarPage(container,self)
+        frame_pay = PayPage(container,self)
 
         # V ----- Add frames to dictionary ----- # 
 
@@ -42,13 +42,13 @@ class Main(tk.Tk):
         self.frames["pageIDRead"] = frame_read
         self.frames["pageIDAdd"] = frame_add
         self.frames["pageIDDel"] = frame_del
-        self.frames["pageIDTar"] = frame_tar
+        self.frames["pageIDPay"] = frame_pay
 
         frame_menu.grid(row=0,column=0,sticky="nsew")
         frame_read.grid(row=0,column=0,sticky="nsew")
         frame_add.grid(row=0,column=0,sticky="nsew")
         frame_del.grid(row=0,column=0,sticky="nsew")
-        frame_tar.grid(row=0,column=0,sticky="nsew")
+        frame_pay.grid(row=0,column=0,sticky="nsew")
 
         self.show_frame("pageIDStart") # The first 6
 
@@ -64,6 +64,12 @@ class Main(tk.Tk):
         self.filepath = loc
         self.listBox.delete(0)
         self.listBox.insert("end",self.filepath)
+        Main.CreateToolTip(self.buttonpath, text=f"Path: {self.filepath}")
+
+    def windowsDialog2(self):
+        """ Function to call windows dialog """ 
+        loc = askopenfilename(title='Please choose an .xlsx file')
+        self.filepath = loc
         Main.CreateToolTip(self.buttonpath, text=f"Path: {self.filepath}") 
 
     # V----- Detect mouse event for tooltip
@@ -91,7 +97,7 @@ class StartPage(tk.Frame):
         self.button2.pack(anchor="w", padx=(10,10), pady=(10,10))
         self.button3 = tk.Button(self, height=2, width=15, text="Add variable",command=lambda: frameName.show_frame("pageIDDel"))
         self.button3.pack(anchor="w", padx=(10,10), pady=(10,10))
-        self.button4 = tk.Button(self, height=2, width=15, text="Production target",command=lambda: frameName.show_frame("pageIDTar"))
+        self.button4 = tk.Button(self, height=2, width=15, text="Driver's Salary",command=lambda: frameName.show_frame("pageIDPay"))
         self.button4.pack(anchor="w", padx=(10,10), pady=(10,10))        
         
 class ReadPage(tk.Frame):
@@ -298,12 +304,45 @@ class DelPage(tk.Frame):
         self.varDispV = ttk.Treeview(self.frameVehicle, column=("Vehicle","Modifier"))
         self.varDispV.place(relx=0.05, rely=0.55, relheight=0.4, relwidth=0.9)
 
-class TarPage(tk.Frame):
+class PayPage(tk.Frame):
     def __init__(self,parent,frameName):
         tk.Frame.__init__(self,parent)
         self.mainframe = Frame(self)
         self.mainframe.place(relx=0, rely=0, width=1000, height=500)
+        self.returnbutton = Button(self.mainframe,text="Return",command=lambda: frameName.show_frame("pageIDStart"), width=7)
+        self.returnbutton.place(relx=0.03,rely=0.015)
 
+        arr = os.listdir('Driver-Log-Recorder---Final-Project/Saved variable')
+        self.variable = StringVar(self)     
+        self.option = arr
+        
+        popupMenu = OptionMenu(self.mainframe, self.variable, *self.option)
+        popupMenu.place(relx= 0.03, rely=0.090, relwidth=0.1)
+        def change_dropdown(*args):
+            LD.Setpath(self)
+        self.variable.trace('w', change_dropdown)
+        self.variable.set('Variable')
+
+        self.driverNameL = Label(self.mainframe, text="Driver's name")
+        self.driverNameL.place(relx=0.03, rely=0.2)
+        self.driverNameE = Entry(self.mainframe)
+        self.driverNameE.place(relx=0.13, rely=0.2)
+        self.driverNameB = Button(self.mainframe, text="Load", command= lambda: LD.LoadPay(self, self.driverNameE.get()))
+        self.driverNameB.place(relx= 0.27, rely=0.191)
+        self.buttonpath = tk.Button(self.mainframe,text="Open file",command=lambda: Main.windowsDialog2(self))
+        self.buttonpath.place(relx=0.15, rely=0.096)
+
+        # Log
+        self.framelog = Frame(self.mainframe, borderwidth=2, relief="groove")
+        self.framelog.place(relx=0.03, rely=0.25, width=280, height=370)
+        self.logL = Label(self.framelog, text="Driver's Log")
+        self.logL.place(relx=0.05,rely=0)
+        self.display = ttk.Treeview(self.framelog, column=("Route", "Vehicle", "Date"))
+        self.display.place(relx=0.05, rely=0.05, relwidth=0.9, relheight=0.9)
+
+        # Paycheck
+        self.framepay = Frame(self.mainframe, borderwidth=2, relief="groove")
+        self.framepay.place(relx=0.32, rely=0.1, relwidth=0.675, relheight=0.89)
 
 class ToolTip(object):
     def __init__(self, widget):
