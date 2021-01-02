@@ -321,13 +321,19 @@ def LoadPay(self, DName):
     
     vehicleData = {}
     for row in dfvar['Vehicle']:
-        exstring = ast.literal_eval(row)
-        vehicleData[exstring[0]] = exstring[1][0]
+        try:
+            exstring = ast.literal_eval(row)
+            vehicleData[exstring[0]] = exstring[1][0]
+        except ValueError:
+            pass
     # print(vehicleData)
     routeData = {}
     for row in dfvar['Route']:
-        exstring = ast.literal_eval(row)
-        routeData[exstring[0]] = exstring[1][0]
+        try:
+            exstring = ast.literal_eval(row)
+            routeData[exstring[0]] = exstring[1][0]
+        except ValueError:
+            pass
     # print(routeData)
     displayData = []
     newdata = []
