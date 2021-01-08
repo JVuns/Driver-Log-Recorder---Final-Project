@@ -165,16 +165,14 @@ def post(self,name,route,vehicle):
 
     # Your common display insertion (Draft from add data display) 
     self.displayDraft['show'] = 'headings'
-    self.displayDraft.heading('#0', text=' ')
     self.displayDraft.heading('#1', text='Name')
     self.displayDraft.heading('#2', text='Route')
     self.displayDraft.heading('#3', text='Vehicle')
     self.displayDraft.heading('#4', text='Date')
-    self.displayDraft.column('#0', anchor="center", width=1)
     self.displayDraft.column('#1', anchor="center", width=85)
     self.displayDraft.column('#2', anchor="center", width=85)
-    self.displayDraft.column('#3', anchor="center", width=84)
-    self.displayDraft.column('#4', anchor="center", width=140)
+    self.displayDraft.column('#3', anchor="center", width=85)
+    self.displayDraft.column('#4', anchor="center", width=143)
     self.displaycontent = self.displayDraft
     self.displaycontent.insert("",index="end",text=f" ",value=(name,route,vehicle,datetime.datetime.now().strftime("%x")))
 
