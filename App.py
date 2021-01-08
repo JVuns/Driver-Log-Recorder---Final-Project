@@ -14,7 +14,8 @@ class Main(tk.Tk):
         # ----- Screen res and title ----- #
         self.geometry("1000x500")
         self.title("Project")
-
+        # iconpath = PhotoImage(file = 'C:/Users/afu/Desktop/tk/Git.png')
+        # program.iconphoto(False, iconpath)
         # ----- Menubar ----- #
         menubar = Menu(self)
         filemenu = Menu(menubar, tearoff=0)
@@ -23,7 +24,7 @@ class Main(tk.Tk):
         self.config(menu=menubar)
 
         container = tk.Frame(self)
-        container.pack(side="top",fill="both",expand=True) # args make screen expand to the south and fill the screen
+        container.pack(side="top",fill="both",expand=True) # args make screen expand to the bottom and fill the screen
 
         container.grid_rowconfigure(0,weight=1) 
         container.grid_columnconfigure(0,weight=1)
@@ -50,12 +51,12 @@ class Main(tk.Tk):
         frame_del.grid(row=0,column=0,sticky="nsew")
         frame_pay.grid(row=0,column=0,sticky="nsew")
 
-        self.show_frame("pageIDStart") # The first 6
+        self.show_frame("pageIDStart") # The first page to show when running the app
 
     # V ----- Change frame ----- #
-    def show_frame(self,cont): # cont will take destination as an argument
-        frame = self.frames[cont]
-        frame.tkraise()
+    def show_frame(self,dest): # dest will take destination as an argument
+        frame = self.frames[dest]
+        frame.tkraise() # raise the destination frame 
 
     # V----- Open Dialog to open the xlsx file ----- #
     def windowsDialog(self):
@@ -74,14 +75,14 @@ class Main(tk.Tk):
 
     # V----- Detect mouse event for tooltip
     def CreateToolTip(self, text):
-        """ Function for tooltip """
+        """ Function for tooltip (self, text to show) """
         toolTip = ToolTip(self)
         def enter(event):
             toolTip.showtip(text)
         def leave(event):
             toolTip.hidetip()
-        self.bind('<Enter>', enter) #Binding enter event to enter function
-        self.bind('<Leave>', leave) #Binding leave event to leave function
+        self.bind('<Enter>', enter) # Binding enter event to enter function
+        self.bind('<Leave>', leave) # Binding leave event to leave function
 
 #-----------------------#
 #--------FRAMES---------#
@@ -118,7 +119,7 @@ class ReadPage(tk.Frame):
         self.listBox = Listbox(self.frame1,width=30,height=1)
         self.listBox.pack(anchor="w",padx=(10,10))
 
-        #Dropdown menu for display option
+        # Dropdown menu for display option
         self.variable = StringVar(self)     
         self.option = ['Driver Log','Driver Productivity','Production Graph']
         self.variable.set('Display Option')
@@ -158,7 +159,7 @@ class AddPage(tk.Frame):
         self.mainframe.place(height=500,width=1000)
         # self.mainframe.configure(bg="red")
 
-        #1st Frame, data entry
+        # 1st Frame, data entry
         self.frame1 = Frame(self.mainframe)
         self.frame1.place(relx=0,rely=0,height=250,width=500)
         self.filepath = ""
@@ -184,7 +185,7 @@ class AddPage(tk.Frame):
         self.entry1.get(),
         self.entry2.get(),
         self.entry3.get()
-        )) #Passing all the entry into post function in LoadData File
+        )) # Passing all the entry into post function in LoadData File
         self.buttonadd.grid(column=3,row=2, padx=(10,10), pady=(10,10))
 
         self.buttonload = Button(self.frame1,text="Load", width=8, command=self.Load)
@@ -192,16 +193,16 @@ class AddPage(tk.Frame):
         self.buttonremove = Button(self.frame1,text="Remove", width=8, command=self.Delete)
         self.buttonremove.grid(column=1,row=4 ,padx=(80,0) ,pady=(10,10))
         
-    #2nd Frame, Draft table
+    # 2nd Frame, Draft table
         self.frame2 = Frame(self.mainframe)
         self.frame2.place(relx=0.5,rely=0,height=250,width=500)
         self.displayDraft = ttk.Treeview(self.frame2, column=("Name","Vehicle","Route","Date"))
         self.displayDraft.place(relheight=0.9, relwidth=0.8)
-        self.displayDraft.bind('<Delete>', self.delete) #Bind Delete key to delete function
+        self.displayDraft.bind('<Delete>', lambda x: self.delete(self, "displayDraft")) # Bind Delete key to delete function
         self.button = Button(self.frame2,text="Post", command=self.transfer)
         self.button.place(relx=0.8,rely=0.8)
 
-    #3rd Frame, Actual table
+    # 3rd Frame, Actual table
         self.frame3 = Frame(self.mainframe)
         self.frame3.place(relx=0.05, rely=0.5, height=250, width=1000)
         self.display = ttk.Treeview(self.frame3, column=("Name","Vehicle","Route","Date"))
@@ -209,10 +210,12 @@ class AddPage(tk.Frame):
         self.savebutton = Button(self.frame3, text="Save", command=self.Save)
         self.savebutton.place(rely=0.8,relx=0.85)
 
-    def delete(self, event=None): #suppose to be in the LoadData.py
-        self.Selected = self.displayDraft.focus() #This will store focused item into the attribute 
-        self.displayDraft.delete(self.Selected) #This will delete the focused item
-    #Should've use lambda but didn't
+    def delete(self, Name ,DisplayName, event=None): # to do: move this to LoadData.py
+        code1 = f"self.Selected = self.{DisplayName}.focus()" # This will store focused item into the attribute 
+        code2 = f"self.{DisplayName}.delete(self.Selected)" # This will delete the focused item
+        exec(code1) # Execute the string
+        exec(code2)
+
     def Load(self):
         LD.misc_load(self)
     def Delete(self):
@@ -225,6 +228,7 @@ class AddPage(tk.Frame):
 
 class DelPage(tk.Frame):
     def __init__(self,parent,frameName):
+        self.delete = AddPage.delete
         tk.Frame.__init__(self,parent)
         self.mainframe = Frame(self)
         self.mainframe.place(height=500,width=1000)
@@ -237,7 +241,7 @@ class DelPage(tk.Frame):
         self.savenameL.place(relx=0.2, rely=0.02)
         self.savenameE = Entry(self.mainframe)
         self.savenameE.place(relx=0.3, rely=0.02)
-
+    
         # Frame for streak variable
         self.frameStreak= Frame(self.mainframe,borderwidth=2, relief="groove")
         self.frameStreak.place(relx=0.03, rely= 0.085, relwidth=0.45, relheight=0.4)
@@ -284,6 +288,11 @@ class DelPage(tk.Frame):
 
         self.varDispR = ttk.Treeview(self.frameRoute, column=("Route","Modifier"))
         self.varDispR.place(relx=0.05, rely=0.55, relheight=0.4, relwidth=0.9)
+        self.varDispR.heading('#0', text='Route')
+        self.varDispR.heading('#1', text='Value')
+        self.varDispR.column('#0', anchor='w')
+        self.varDispR.column('#1', anchor='w')
+        self.varDispR.bind('<Delete>', lambda x: AddPage.delete(self, "blank", "varDispR"))
 
         # Frame for vehicle
         self.frameVehicle = Frame(self.mainframe,borderwidth=2, relief="groove")
@@ -303,6 +312,11 @@ class DelPage(tk.Frame):
 
         self.varDispV = ttk.Treeview(self.frameVehicle, column=("Vehicle","Modifier"))
         self.varDispV.place(relx=0.05, rely=0.55, relheight=0.4, relwidth=0.9)
+        self.varDispV.heading('#0', text='Vehicle')
+        self.varDispV.heading('#1', text='Value')
+        self.varDispV.column('#0', anchor='w')
+        self.varDispV.column('#1', anchor='w')
+        self.varDispV.bind('<Delete>', lambda x: AddPage.delete(self, "blank", "varDispV"))
 
 class PayPage(tk.Frame):
     def __init__(self,parent,frameName):
@@ -316,11 +330,19 @@ class PayPage(tk.Frame):
         self.variable = StringVar(self)     
         self.option = arr
         
-        popupMenu = OptionMenu(self.mainframe, self.variable, *self.option)
-        popupMenu.place(relx= 0.03, rely=0.090, relwidth=0.1)
-        def change_dropdown(*args):
+        self.dropdown = OptionMenu(self.mainframe, self.variable, *self.option)
+        self.dropdown.place(relx= 0.03, rely=0.090, relwidth=0.1)
+        def OnChange(*args):
             LD.Setpath(self)
-        self.variable.trace('w', change_dropdown)
+            arr = os.listdir('Driver-Log-Recorder---Final-Project/Saved variable')
+            print(arr)
+            menu = self.dropdown["menu"]
+            menu.delete(0, "end")
+            for string in arr:
+                menu.add_command(label=string, 
+                                command=lambda value=string: self.variable.set(value))
+
+        self.variable.trace('w', OnChange)
         self.variable.set('Variable')
 
         self.driverNameL = Label(self.mainframe, text="Driver's name")
@@ -344,7 +366,7 @@ class PayPage(tk.Frame):
         self.framepay = Frame(self.mainframe, borderwidth=2, relief="groove")
         self.framepay.place(relx=0.32, rely=0.1, relwidth=0.675, relheight=0.89)
 
-class ToolTip(object):
+class ToolTip(object): # Praise Stackoverflow for this class
     def __init__(self, widget):
         self.widget = widget
         self.tipwindow = None

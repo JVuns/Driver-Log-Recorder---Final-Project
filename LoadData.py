@@ -66,14 +66,15 @@ def Load_excel_data(self):
         df3 = df2.groupby(['Name','Date']).count()
 
         for index, row in df2.iterrows():
-            if [row[0],row[3]] != tempvar:
+            if [row[0],row[3]] != tempvar: # adding all unique combination to the list 
                 name.append(row[0])
                 date.append(row[3])
                 tempvar = [row[0],row[3]]
         for number in df3['Route'].values:
-            count.append(number)
-        data3 = zip(name,date,count)
+            count.append(number) # count how many activity
+        data3 = zip(name,date,count) # combining the data for easier use
         mergedData = list(data3)
+        # Your common display insertion (Driver activity) 
         self.display["columns"] = ["No", "Name", "Date", "Activity"]
         self.display.heading('#0,', text='No')
         self.display.column('#0', anchor="center", width=0)
@@ -106,14 +107,15 @@ def Load_excel_data(self):
         else:
             df2 = df.sort_values(by=['Name','Date','Route','Vehicle'])
             df3 = df2.groupby(['Date'], as_index=False).count()
-            df3.columns = ['Date', 'Total Activity','','']
+            df3.columns = ['Date', 'Total Activity','',''] # Only use date and total activity, obsolete data were left blank
             # print(df3)
-            figure1 = plt.Figure(figsize=(8,4), dpi=88)
+            # Display
+            figure1 = plt.Figure(figsize=(8,4), dpi=88) 
             ax1 = figure1.add_subplot(111)
             self.bar1 = FigureCanvasTkAgg(figure1, self.frame2)
             self.bar1.get_tk_widget().place(relx=0.001, rely=0.09)
             if self.targetE.get().isdigit() == True:
-                ax1.axhline(y=int(self.targetE.get()), color='r', linestyle='dashed')
+                ax1.axhline(y=int(self.targetE.get()), color='r', linestyle='dashed') # Straight line for target line
             df3.plot(x='Date', y='Total Activity', kind='line', ax=ax1)
 
 
@@ -160,32 +162,32 @@ def post(self,name,route,vehicle):
     if not route.strip():
         tk.messagebox.showerror("Empty Entry","Route Entry is empty")
         return None
+
+    # Your common display insertion (Draft from add data display) 
+    self.displayDraft['show'] = 'headings'
     self.displayDraft.heading('#0', text=' ')
     self.displayDraft.heading('#1', text='Name')
     self.displayDraft.heading('#2', text='Route')
     self.displayDraft.heading('#3', text='Vehicle')
     self.displayDraft.heading('#4', text='Date')
-    self.displayDraft.column('#0', anchor="center", width=50)
+    self.displayDraft.column('#0', anchor="center", width=1)
     self.displayDraft.column('#1', anchor="center", width=85)
-    self.displayDraft.column('#2', anchor="center", width=60)
-    self.displayDraft.column('#3', anchor="center", width=60)
+    self.displayDraft.column('#2', anchor="center", width=85)
+    self.displayDraft.column('#3', anchor="center", width=84)
     self.displayDraft.column('#4', anchor="center", width=140)
     self.displaycontent = self.displayDraft
-    self.displaycontent.insert("",index="end",text=f"{len(self.displayDraft.get_children())}",value=(name,route,vehicle,datetime.datetime.now().strftime("%x")))
+    self.displaycontent.insert("",index="end",text=f" ",value=(name,route,vehicle,datetime.datetime.now().strftime("%x")))
 
 def varPostV(self,name,value):
+    """ Moving all the data from entry to treeview """
     if not name.strip():
         tk.messagebox.showerror("Empty entry","The variable name for vehicle is empty")
         return None
     if not value.strip():
         tk.messagebox.showerror("Empty entry","The variable value for vechicle is empty")
         return None
-    self.varDispV.heading('#0', text='Vehicle')
-    self.varDispV.heading('#1', text='Value')
-    self.varDispV.column('#0', anchor='w')
-    self.varDispV.column('#1', anchor='w')
     self.varVContent = self.varDispV
-    self.varVContent.insert("",index="end",text=name,value=(value))
+    self.varVContent.insert("",index="end",text=name,value=float(value))
 
 def varPostR(self,name,value):
     if not name.strip():
@@ -194,14 +196,11 @@ def varPostR(self,name,value):
     if not value.strip():
         tk.messagebox.showerror("Empty entry","The variable value for route is empty")
         return None
-    self.varDispR.heading('#0', text='Route')
-    self.varDispR.heading('#1', text='Value')
-    self.varDispR.column('#0', anchor='w')
-    self.varDispR.column('#1', anchor='w')
     self.varRContent = self.varDispR
-    self.varRContent.insert("",index="end",text=name,value=(value))
-    
+    self.varRContent.insert("",index="end",text=name,value=float(value)) #Float to keep the data consistent
+
 def transferdata(self):
+    # Your usuall display insertion (Posted data to be saved)
     self.display.heading('#0', text='No')
     self.display.heading('#1', text='Name')
     self.display.heading('#2', text='Route')
@@ -214,9 +213,10 @@ def transferdata(self):
     self.display.column('#4', anchor="center", width=400)
     self.displayPost = self.display
     for item in self.displayDraft.get_children():
-        self.displayPost.insert("",index="end",text=f"{len(self.displayDraft.get_children())}",value=self.displayDraft.item(item)["values"])
+        self.displayPost.insert("",index="end",text=len(self.display.get_children())+1,value=self.displayDraft.item(item)["values"])
 
 def LoadPay(self, DName):
+    clear_data(self)
     # Load data
     varfilepath = f"Driver-Log-Recorder---Final-Project/Saved variable/{self.filename}"
     try:
@@ -240,7 +240,7 @@ def LoadPay(self, DName):
         tk.messagebox.showerror("Error", f"{self.filepath} File not found")
         return None
 
-    # Add driver log into treeview
+    # Your common display insertion (Add driver log into treeview) 
     dflog = df.loc[df['Name'] == self.driverNameE.get()]
     self.display["columns"] = ["Name", "Route", "Vehicle", "Date"]
     self.display.heading('#0,', text='No')
@@ -253,9 +253,10 @@ def LoadPay(self, DName):
     self.display.column('#3', anchor="center", width=50)
     self.display.heading('#4', text='Date')
     self.display.column('#4', anchor="center", width=60)
+    # Inserting the log into dataframe
     for index, row in dflog.iterrows():
         # print(row.values)
-        self.display.insert("",index="end",text=len(self.display.get_children()),value=(row.values[0],row.values[1],row.values[2],row.values[3]))
+        self.display.insert("",index="end",text=len(self.display.get_children())+1,value=(row.values[0],row.values[1],row.values[2],row.values[3]))
     render(self)
     
     # Calculation
@@ -263,35 +264,41 @@ def LoadPay(self, DName):
     datastore2 = []
     datastore3 = {}
     tuples = [tuple(x) for x in dflog.values]
+
+    # Naming the combination by combination in route-vehicle-name-date order ie: South-Mini-Andy-Boomcar
+    # And counting the occurrence of the combination
     for liste in tuples:
-        row = '-'.join(liste)
+        row = '-'.join(liste) # Making space character in variable name impossible
         if not row in datastore:
             datastore[row] = 1
         elif row in datastore:
                 datastore[row] += 1
-    # print(datastore)
+
+    # Splitting the data for neat display
     for data in datastore.items():
         new_id = (data[0].split("-"))
         new_id.append(data[1])
         datastore2.append(new_id)
-    # print(datastore2)
+
+    # Adding the dictionary to seperate each streak category
     for data in datastore2:
         if (data[1],data[2]) not in datastore3:
-            datastore3[data[1],data[2]]={'C1':0, 'C2':0,'C3':0}
-    for data in datastore2:
-        if data[4] <= 3:
-            datastore3[data[1],data[2]]['C1']+=int(data[4])
-        elif data[4] > 3 and data[4] <= 5:
-            datastore3[data[1],data[2]]['C1']+=3
-            datastore3[data[1],data[2]]['C2']+=int(data[4]-3)
-        else:
-            datastore3[data[1],data[2]]['C1']+=3
-            datastore3[data[1],data[2]]['C2']+=2
-            datastore3[data[1],data[2]]['C3']+=int(data[4]-5)
-    # print(datastore3)
-    # for combination in datastore3.items():
-    #     print(combination[0])
+            datastore3[data[1],data[2]]={'C1':0, 'C2':0,'C3':0} # < --- Each combination will have that nested dictionary
 
+    # Evaluate the data 
+    for data in datastore2:
+        print(data[4])
+        if data[4] <= 3:
+            datastore3[data[1],data[2]]['C1']+=int(data[4]) # if the occurrence count is <= 3 add the value to C1
+        elif data[4] > 3 and data[4] <= 5:
+            datastore3[data[1],data[2]]['C1']+=3                # if the occurrence is > 3 and <= 5 add 3 to C1 (maximum value C1 could get)
+            datastore3[data[1],data[2]]['C2']+=int(data[4]-3)   # and subtract 3 (taken for C1 maximum value)
+        elif data[4] > 5:
+            datastore3[data[1],data[2]]['C1']+=3                # if the occurrence is > 5 follow the same pattern for C1
+            datastore3[data[1],data[2]]['C2']+=2                # add 2 to C1 (maximum value C2 could get)
+            datastore3[data[1],data[2]]['C3']+=int(data[4]-5)   # and subtract 5 (taken for C1 and C2 maximum value)
+
+    # Your common display insertion and initialization (for displaying combination and category)
     self.payDisplay = ttk.Treeview(self.framepay)
     self.payDisplay.place(relx=0.035, rely=0.09, relwidth=0.925, relheight=0.5)
     self.TLabel = Label(self.mainframe, text="Total")
@@ -311,22 +318,24 @@ def LoadPay(self, DName):
     for combination in datastore3.items():
         # print(row.values)
         self.payDisplay.insert("",index="end",text=(len(self.payDisplay.get_children())+1),value=(combination[0],combination[1]['C1'],
-        combination[1]['C3'],
-        combination[1]['C2']))
+        combination[1]['C2'],
+        combination[1]['C3']))
 
+    # Paycheck calculation
     C1 = dfvar.loc[0,'Category A']
     C2 = dfvar.loc[0,'Category B']
     C3 = dfvar.loc[0,'Category C']
     Base = dfvar.loc[0,'Base wage']
     
+        # Taking the data from variable xlsx file to be matched with data from display 
     vehicleData = {}
     for row in dfvar['Vehicle']:
         try:
-            exstring = ast.literal_eval(row)
+            exstring = ast.literal_eval(row) # Make list that somehow turned into string list again
             vehicleData[exstring[0]] = exstring[1][0]
         except ValueError:
             pass
-    # print(vehicleData)
+
     routeData = {}
     for row in dfvar['Route']:
         try:
@@ -334,32 +343,34 @@ def LoadPay(self, DName):
             routeData[exstring[0]] = exstring[1][0]
         except ValueError:
             pass
-    # print(routeData)
+
     displayData = []
     newdata = []
     for child in self.payDisplay.get_children():
         displayData.append(self.payDisplay.item(child)["values"])
-    # print(displayData)
+
+    # Append the money to a list and sum it 
     totalmoney = []
     for data in displayData:
         x = data[0].split()
         newdata.append([x,data[1],data[2],data[3]])
-    for datavar in newdata:
+        print(newdata)
+    for datavar in newdata: # Base wage x streak count(C1 or C2 or C3) x Route modifier x Vehicle modifier x streak count(C1 or C2 or C3)
         totalmoney.append(float(Base)*float(C1)*float(routeData[datavar[0][0]])*float(vehicleData[datavar[0][1]])*datavar[1])
         totalmoney.append(float(Base)*float(C2)*float(routeData[datavar[0][0]])*float(vehicleData[datavar[0][1]])*datavar[2])
         totalmoney.append(float(Base)*float(C3)*float(routeData[datavar[0][0]])*float(vehicleData[datavar[0][1]])*datavar[3])
-    self.Money = ("{:,}".format(sum(totalmoney)))
+    self.Money = ("{:,}".format(sum(totalmoney))) # Summing it and adding coma to the total money  
     
     self.TLabel = Label(self.mainframe, text=f"{self.Money}", width=20, borderwidth=2,bg="white", relief="groove")
     self.TLabel.place(relx=0.82, rely=0.65) 
 
 
-def Setpath(self):
+def Setpath(self): # set path from the dropdown as instance to make it easier to be called later
     filename = self.variable.get()
     print(filename)
     self.filename = filename
 
-def render(self):
+def render(self): # render the label of Driver name: 
     self.payName = Label(self.framepay, text="Driver name: ")
     self.payName.place(relx=0.02, rely=0.02)
     self.payName = Label(self.framepay, text=self.driverNameE.get())
