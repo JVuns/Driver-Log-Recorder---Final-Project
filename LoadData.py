@@ -354,9 +354,9 @@ def LoadPay(self, DName):
         newdata.append([x,data[1],data[2],data[3]])
         print(newdata)
     for datavar in newdata: # Base wage x streak count(C1 or C2 or C3) x Route modifier x Vehicle modifier x streak count(C1 or C2 or C3)
-        totalmoney.append(float(Base)*float(C1)*float(routeData[datavar[0][0]])*float(vehicleData[datavar[0][1]])*datavar[1])
-        totalmoney.append(float(Base)*float(C2)*float(routeData[datavar[0][0]])*float(vehicleData[datavar[0][1]])*datavar[2])
-        totalmoney.append(float(Base)*float(C3)*float(routeData[datavar[0][0]])*float(vehicleData[datavar[0][1]])*datavar[3])
+        totalmoney.append(float(Base)*float(C1)*float(routeData[datavar[0][1]])*float(vehicleData[datavar[0][0]])*datavar[1])
+        totalmoney.append(float(Base)*float(C2)*float(routeData[datavar[0][1]])*float(vehicleData[datavar[0][0]])*datavar[2])
+        totalmoney.append(float(Base)*float(C3)*float(routeData[datavar[0][1]])*float(vehicleData[datavar[0][0]])*datavar[3])
     self.Money = ("{:,}".format(sum(totalmoney))) # Summing it and adding coma to the total money  
     
     self.TLabel = Label(self.mainframe, text=f"{self.Money}", width=20, borderwidth=2,bg="white", relief="groove")
