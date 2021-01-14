@@ -366,7 +366,7 @@ class PayPage(tk.Frame):
         self.framepay = Frame(self.mainframe, borderwidth=2, relief="groove")
         self.framepay.place(relx=0.32, rely=0.1, relwidth=0.675, relheight=0.89)
 
-class ToolTip(object): # Praise Stackoverflow for this class
+class ToolTip(object): # Praise Stackoverflow for this class https://stackoverflow.com/questions/20399243/display-message-when-hovering-over-something-with-mouse-cursor-in-python
     def __init__(self, widget):
         self.widget = widget
         self.tipwindow = None

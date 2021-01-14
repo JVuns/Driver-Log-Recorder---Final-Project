@@ -5,6 +5,7 @@ import numpy as np
 from tkinter import messagebox
 from tkinter import ttk
 import datetime
+from datetime import timedelta, date
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import re
@@ -103,7 +104,27 @@ def Load_excel_data(self):
             if self.targetE.get().isdigit() == True:
                 ax1.axhline(y=int(self.targetE.get()), color='r', linestyle='dashed') # Straight line for target line
             df3.plot(x='Date', y='Total Activity', kind='line', ax=ax1)
-
+            
+    # ----- Summary graphs ----- #
+    elif self.variable.get() == "Summary":
+        clear_data(self)
+        df = filepath_check(self, file_path)
+        if self.targetE.get().isdigit() == True:
+            tk.messagebox.showerror("Error", f"Target field is empty")
+        else:
+            df2 = df.sort_values(by=['Name','Date','Route','Vehicle'])
+            df3 = df2.groupby(['Date'], as_index=False).count()
+            df3.columns = ['Date', 'Total Activity','',''] # Only use date and total activity, obsolete data were left blank
+            # print(df3)
+            # Display
+            figure1 = plt.Figure(figsize=(8,4), dpi=88) 
+            ax1 = figure1.add_subplot(111)
+            self.bar1.set_xlim([datetime.date(2, 14, 21), datetime.date(5, 12, 21)])
+            self.bar1 = FigureCanvasTkAgg(figure1, self.frame2)
+            self.bar1.get_tk_widget().place(relx=0.001, rely=0.09)
+            if self.targetE.get().isdigit() == True:
+                ax1.axhline(y=int(self.targetE.get()), color='r', linestyle='dashed') # Straight line for target line
+            df3.plot(x='Date', y='Total Activity', kind='line', ax=ax1)
 
     # ----- Misc Load ----- #
 def misc_load(self):
