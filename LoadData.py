@@ -10,6 +10,20 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import re
 import ast
 
+def filepath_check(self, file_path):
+    try:
+        excel_filename = r"{}".format(file_path)
+        # print(excel_filename)
+        if excel_filename[-4:] == ".csv":
+            df = pd.read_csv(excel_filename)
+            return df
+        else:
+            df = pd.read_excel(excel_filename)
+            return df
+    except FileNotFoundError:
+        tk.messagebox.showerror("Error", f"{file_path} File not found")
+        return None
+
 def clear_data(self):
     ''' Clearing data from treeview'''
     self.display.delete(*self.display.get_children())
@@ -24,17 +38,7 @@ def Load_excel_data(self):
     file_path = self.filepath
     # ----- Driver Log ----- #
     if self.variable.get() == "Driver Log":
-        try:
-            excel_filename = r"{}".format(file_path)
-            # print(excel_filename)
-            if excel_filename[-4:] == ".csv":
-                df = pd.read_csv(excel_filename)
-            else:
-                df = pd.read_excel(excel_filename)
-        except FileNotFoundError:
-            tk.messagebox.showerror("Error", f"{file_path} File not found")
-            return None
-
+        df = filepath_check(self, file_path)
         clear_data(self)
         self.display["column"] = list(df.columns) 
         self.display["show"] = "headings"
@@ -48,16 +52,7 @@ def Load_excel_data(self):
     # ----- Driver Productivity ----- #
     elif self.variable.get() == "Driver Productivity":
         clear_data(self)
-        try:
-            excel_filename = r"{}".format(file_path)
-            # print(excel_filename)
-            if excel_filename[-4:] == ".csv":
-                df = pd.read_csv(excel_filename)
-            else:
-                df = pd.read_excel(excel_filename)
-        except FileNotFoundError:
-            tk.messagebox.showerror("Error", f"{file_path} File not found")
-            return None
+        df = filepath_check(self, file_path)
         tempvar=[]
         name=[]
         count=[]
@@ -92,18 +87,9 @@ def Load_excel_data(self):
     # ----- Production Graph ----- #
     elif self.variable.get() == "Production Graph":
         clear_data(self)
-        try:
-            excel_filename = r"{}".format(file_path)
-            # print(excel_filename)
-            if excel_filename[-4:] == ".csv":
-                df = pd.read_csv(excel_filename)
-            else:
-                df = pd.read_excel(excel_filename)
-        except FileNotFoundError:
-            tk.messagebox.showerror("Error", f"{file_path} File not found")
-            return None
-        # if self.targetE.get().isdigit() == True:
-            # tk.messagebox.showerror("Error", f"Target field is empty")
+        df = filepath_check(self, file_path)
+        if self.targetE.get().isdigit() == True:
+            tk.messagebox.showerror("Error", f"Target field is empty")
         else:
             df2 = df.sort_values(by=['Name','Date','Route','Vehicle'])
             df3 = df2.groupby(['Date'], as_index=False).count()
@@ -123,16 +109,7 @@ def Load_excel_data(self):
 def misc_load(self):
     '''Loading data from excel '''
     file_path = self.filepath
-    try:
-        excel_filename = r"{}".format(file_path)
-        # print(excel_filename)
-        if excel_filename[-4:] == ".csv":
-            df = pd.read_csv(excel_filename)
-        else:
-            df = pd.read_excel(excel_filename)
-    except FileNotFoundError:
-        tk.messagebox.showerror("Error", f"{file_path} File not found")
-        return None
+    df = filepath_check(self, file_path)
     clear_data(self)
     self.display["column"] = list(df.columns) 
     # print(self.display["column"])
@@ -237,7 +214,7 @@ def LoadPay(self, DName):
     except FileNotFoundError:
         tk.messagebox.showerror("Error", f"{self.filepath} File not found")
         return None
-
+        
     # Your common display insertion (Add driver log into treeview) 
     dflog = df.loc[df['Name'] == self.driverNameE.get()]
     self.display["columns"] = ["Name", "Route", "Vehicle", "Date"]
@@ -352,11 +329,15 @@ def LoadPay(self, DName):
     for data in displayData:
         x = data[0].split()
         newdata.append([x,data[1],data[2],data[3]])
-        print(newdata)
     for datavar in newdata: # Base wage x streak count(C1 or C2 or C3) x Route modifier x Vehicle modifier x streak count(C1 or C2 or C3)
-        totalmoney.append(float(Base)*float(C1)*float(routeData[datavar[0][1]])*float(vehicleData[datavar[0][0]])*datavar[1])
-        totalmoney.append(float(Base)*float(C2)*float(routeData[datavar[0][1]])*float(vehicleData[datavar[0][0]])*datavar[2])
-        totalmoney.append(float(Base)*float(C3)*float(routeData[datavar[0][1]])*float(vehicleData[datavar[0][0]])*datavar[3])
+        # print((Base))
+        # print((C1))
+        # print((routeData[datavar[0][0]]))
+        # print((vehicleData[datavar[0][1]]))
+        # print(datavar[1])
+        totalmoney.append(float(Base)*float(C1)*float(routeData[datavar[0][0]])*float(vehicleData[datavar[0][1]])*datavar[1])
+        totalmoney.append(float(Base)*float(C2)*float(routeData[datavar[0][0]])*float(vehicleData[datavar[0][1]])*datavar[2])
+        totalmoney.append(float(Base)*float(C3)*float(routeData[datavar[0][0]])*float(vehicleData[datavar[0][1]])*datavar[3])
     self.Money = ("{:,}".format(sum(totalmoney))) # Summing it and adding coma to the total money  
     
     self.TLabel = Label(self.mainframe, text=f"{self.Money}", width=20, borderwidth=2,bg="white", relief="groove")
