@@ -116,15 +116,7 @@ def Load_excel_data(self):
             df3 = df2.groupby(['Date'], as_index=False).count()
             df3.columns = ['Date', 'Total Activity','',''] # Only use date and total activity, obsolete data were left blank
             # print(df3)
-            # Display
-            figure1 = plt.Figure(figsize=(8,4), dpi=88) 
-            ax1 = figure1.add_subplot(111)
-            self.bar1.set_xlim([datetime.date(2, 14, 21), datetime.date(5, 12, 21)])
-            self.bar1 = FigureCanvasTkAgg(figure1, self.frame2)
-            self.bar1.get_tk_widget().place(relx=0.001, rely=0.09)
-            if self.targetE.get().isdigit() == True:
-                ax1.axhline(y=int(self.targetE.get()), color='r', linestyle='dashed') # Straight line for target line
-            df3.plot(x='Date', y='Total Activity', kind='line', ax=ax1)
+            
 
     # ----- Misc Load ----- #
 def misc_load(self):
@@ -159,8 +151,8 @@ def post(self,name,route,vehicle):
         return None
     if not route.strip():
         tk.messagebox.showerror("Empty Entry","Route Entry is empty")
-        return None
-
+        return None 
+    
     # Your common display insertion (Draft from add data display) 
     self.displayDraft['show'] = 'headings'
     self.displayDraft.heading('#1', text='Name')
@@ -176,21 +168,36 @@ def post(self,name,route,vehicle):
 
 def varPostV(self,name,value):
     """ Moving all the data from entry to treeview """
+    regex = re.search("-[@_!#$%^&*()<>?/\|}{~: ]", name) #Prevent user from giving special character and space character
+    print(regex)
+    if not regex == None:
+        tk.messagebox.showerror("Forbidden Entry","The variable name for vehicle must not contain special character or space character")
+        return None
     if not name.strip():
         tk.messagebox.showerror("Empty entry","The variable name for vehicle is empty")
         return None
     if not value.strip():
         tk.messagebox.showerror("Empty entry","The variable value for vechicle is empty")
         return None
+    if not value.isdigit():
+        tk.messagebox.showerror("Empty entry","The variable value for vechicle must be number")
+        return None
     self.varVContent = self.varDispV
     self.varVContent.insert("",index="end",text=name,value=float(value))
 
 def varPostR(self,name,value):
+    regex = re.search("[-@_!#$%^&*()<>?/\|}{~: ]", name) 
+    if not regex == None:
+        tk.messagebox.showerror("Forbidden Entry","The variable name for route must not contain special character or space character")
+        return None
     if not name.strip():
         tk.messagebox.showerror("Empty entry","The variable name for route is empty")
         return None
     if not value.strip():
         tk.messagebox.showerror("Empty entry","The variable value for route is empty")
+        return None
+    if not value.isdigit():
+        tk.messagebox.showerror("Empty entry","The variable value for route must be number")
         return None
     self.varRContent = self.varDispR
     self.varRContent.insert("",index="end",text=name,value=float(value)) #Float to keep the data consistent

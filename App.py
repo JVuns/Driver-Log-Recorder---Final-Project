@@ -121,7 +121,7 @@ class ReadPage(tk.Frame):
 
         # Dropdown menu for display option
         self.variable = StringVar(self)     
-        self.option = ['Driver Log','Driver Productivity','Production Graph']
+        self.option = ['Driver Log','Driver Productivity','Production Graph','Summxary']
         self.variable.set('Display Option')
 
         # Arguments for dropdown menu
@@ -138,7 +138,6 @@ class ReadPage(tk.Frame):
         
         def change_dropdown(*args):
             LD.Load_excel_data(self)
-
         self.variable.trace('w', change_dropdown)
 
         # 2nd Frame, data display
