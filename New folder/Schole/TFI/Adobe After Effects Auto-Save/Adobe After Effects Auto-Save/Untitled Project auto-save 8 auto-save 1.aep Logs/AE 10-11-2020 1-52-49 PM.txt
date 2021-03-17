@@ -1,0 +1,8 @@
+  10/11/2020 1:52:49 PM: Starting composition “Main menu”.
+
+  Output To: C:\σχολή\Main menu.avi    10/11/2020 1:57:27 PM: Finished composition “Main menu”.
+
+
+  Total Time Elapsed: 4 Min, 37 Sec
+Log closed on 10/11/2020 at 1:57:27 PM
+

@@ -1,0 +1,17 @@
+Adobe After Effects v17.1.4 Windows 64 render log for project “2nd middle part.aep”
+
+Rendering started on 10/24/2020 at 8:26:41 PM
+
+  10/24/2020 8:26:41 PM: Starting composition “5”.
+
+  Output To: C:\Schole\5.avi    10/24/2020 8:34:15 PM: Finished composition “5”.
+
+
+  10/24/2020 8:34:16 PM: Starting composition “6”.
+
+  Output To: C:\Schole\6.avi    10/24/2020 8:40:54 PM: Finished composition “6”.
+
+
+  Total Time Elapsed: 14 Min, 9 Sec
+Log closed on 10/24/2020 at 8:40:55 PM
+

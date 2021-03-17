@@ -1,0 +1,8 @@
+  10/21/2020 4:22:27 PM: Starting composition “comp2”.
+
+  Output To: C:\Schole\comp2.avi    10/21/2020 4:33:47 PM: Finished composition “comp2”.
+
+
+  Total Time Elapsed: 11 Min, 18 Sec
+Log closed on 10/21/2020 at 4:33:47 PM
+

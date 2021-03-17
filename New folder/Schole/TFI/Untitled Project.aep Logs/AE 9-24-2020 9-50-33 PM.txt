@@ -1,0 +1,8 @@
+  9/24/2020 9:50:33 PM: Starting composition “Health 2”.
+
+  Output To: C:\σχολή\Health 2.wav    9/24/2020 9:50:36 PM: Finished composition “Health 2”.
+
+
+  Total Time Elapsed: 2 Seconds
+Log closed on 9/24/2020 at 9:50:36 PM
+

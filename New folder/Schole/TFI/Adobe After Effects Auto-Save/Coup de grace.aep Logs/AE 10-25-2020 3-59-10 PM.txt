@@ -1,0 +1,8 @@
+  10/25/2020 3:59:10 PM: Starting composition “Finale”.
+
+  Output To: C:\Schole\Video\Finale.avi      Render stopped by user.      Render stopped by user.    10/25/2020 4:34:47 PM: Finished composition “Finale”.
+
+
+  Total Time Elapsed: 35 Min, 27 Sec
+Log closed on 10/25/2020 at 4:34:51 PM
+

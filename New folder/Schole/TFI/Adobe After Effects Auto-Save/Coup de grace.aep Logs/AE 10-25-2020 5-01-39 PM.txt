@@ -1,0 +1,8 @@
+  10/25/2020 5:01:41 PM: Starting composition “Finale”.
+
+  Output To: C:\Schole\Video\Finale_2.avi    10/25/2020 5:36:24 PM: Finished composition “Finale”.
+
+
+  Total Time Elapsed: 34 Min, 43 Sec
+Log closed on 10/25/2020 at 5:36:25 PM
+

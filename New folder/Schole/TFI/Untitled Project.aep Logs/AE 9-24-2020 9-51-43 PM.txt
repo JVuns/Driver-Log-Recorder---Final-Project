@@ -1,0 +1,8 @@
+  9/24/2020 9:51:43 PM: Starting composition “Main menu”.
+
+  Output To: C:\σχολή\Main menu_1.avi      Render stopped by user.    9/24/2020 9:51:46 PM: Finished composition “Main menu”.
+
+
+  Total Time Elapsed: 2 Seconds
+Log closed on 9/24/2020 at 9:51:46 PM
+

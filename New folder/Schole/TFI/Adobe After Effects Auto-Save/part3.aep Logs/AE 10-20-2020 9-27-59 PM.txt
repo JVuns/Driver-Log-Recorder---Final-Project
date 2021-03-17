@@ -1,0 +1,8 @@
+  10/20/2020 9:27:59 PM: Starting composition “Comp 1”.
+
+  Output To: C:\Schole\Comp 1.avi    10/20/2020 9:28:00 PM: Finished composition “Comp 1”.
+
+
+  Total Time Elapsed: 1 Seconds
+Log closed on 10/20/2020 at 9:28:00 PM
+

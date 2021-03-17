@@ -1,0 +1,8 @@
+  10/25/2020 2:29:49 PM: Starting composition “6”.
+
+  Output To: C:\Schole\Video\need4compress.avi    10/25/2020 2:36:30 PM: Finished composition “6”.
+
+
+  Total Time Elapsed: 6 Min, 34 Sec
+Log closed on 10/25/2020 at 2:36:30 PM
+

@@ -1,0 +1,8 @@
+  9/24/2020 9:51:04 PM: Starting composition “Main menu”.
+
+  Output To: C:\σχολή\Main menu_1.wav    9/24/2020 9:51:06 PM: Finished composition “Main menu”.
+
+
+  Total Time Elapsed: 2 Seconds
+Log closed on 9/24/2020 at 9:51:06 PM
+

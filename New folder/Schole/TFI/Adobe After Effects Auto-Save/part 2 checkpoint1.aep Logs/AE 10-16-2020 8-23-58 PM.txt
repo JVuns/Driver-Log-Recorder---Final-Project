@@ -1,0 +1,8 @@
+  10/16/2020 8:23:58 PM: Starting composition “Jalan Danau Indah Barat 2 3”.
+
+  Output To: C:\Schole\2ndpart complete.avi    10/16/2020 8:33:04 PM: Finished composition “Jalan Danau Indah Barat 2 3”.
+
+
+  Total Time Elapsed: 8 Min, 56 Sec
+Log closed on 10/16/2020 at 8:33:06 PM
+

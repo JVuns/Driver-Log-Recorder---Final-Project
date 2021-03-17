@@ -1,0 +1,8 @@
+  10/24/2020 10:19:13 AM: Starting composition “Middle2”.
+
+  Output To: C:\Schole\Middle2.avi    10/24/2020 10:29:39 AM: Finished composition “Middle2”.
+
+
+  Total Time Elapsed: 10 Min, 20 Sec
+Log closed on 10/24/2020 at 10:29:39 AM
+
