@@ -45,11 +45,11 @@ def Load_excel_data(self):
         self.display["show"] = "headings"
         for column in self.display["columns"]:
             self.display.heading(column, text=column) # column heading = column name
-        
         df_rows = df.replace(np.nan,'', regex=True).to_numpy().tolist() # turns the dataframe into a list of lists
         for row in df_rows:
             self.display.insert("", "end", values=row) # inserts each list to the treeview
         return None
+
     # ----- Driver Productivity ----- #
     elif self.variable.get() == "Driver Productivity":
         clear_data(self)
