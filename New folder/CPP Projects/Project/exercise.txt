@@ -1,0 +1,6 @@
+C:\Users\jevon\Documents\CPP Projects\Project\1b.cpp	In function 'int main()':
+10	69	C:\Users\jevon\Documents\CPP Projects\Project\1b.cpp	[Error] too many initializers for 'char [5]'
+10	69	C:\Users\jevon\Documents\CPP Projects\Project\1b.cpp	[Error] initializer-string for array of chars is too long [-fpermissive]
+11	39	C:\Users\jevon\Documents\CPP Projects\Project\1b.cpp	[Error] too many initializers for 'char [2]'
+11	39	C:\Users\jevon\Documents\CPP Projects\Project\1b.cpp	[Error] initializer-string for array of chars is too long [-fpermissive]
+31		C:\Users\jevon\Documents\CPP Projects\Project\Makefile.win	recipe for target '1b.o' failed
